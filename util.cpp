@@ -29,6 +29,28 @@ CYCLES get_highres_time(){
 	return time;
 	
 }
+
+// probe straight from paper
+CYCLES probe_one_block(ADDR_PTR adrs) {
+  CYCLES time;
+
+  asm __volatile__ (
+    "  mfence             \n"
+    "  lfence             \n"
+    "  rdtsc              \n"
+    "  lfence             \n"
+    "  movl %%eax, %%esi  \n"
+    "  movl (%1), %%eax   \n"
+    "  lfence             \n"
+    "  rdtsc              \n"
+    "  subl %%esi, %%eax  \n"
+    "  clflush 0(%1)      \n"
+    : "=a" (time)
+    : "c" (adrs)
+    :  "%esi", "%edx");
+  return time;
+}
+
 void wait_for_time(CYCLES time){
 	CYCLES start_t = get_highres_time();
 	while(get_highres_time() - start_t < time){
