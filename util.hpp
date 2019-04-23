@@ -19,20 +19,23 @@
 #define UTIL_H_
 
 #define ADDR_PTR uint64_t 
-#define CYCLES volatile uint32_t
+#define CYCLES volatile uint64_t
 #define CACHE_LINE_SIZE 64
-#define TIME_CUTOFF 100 
-#define TIME_SLOT 10000 
+#define TIME_CUTOFF 200 
+#define TIME_SLOT 2500 
+#define SLOT_WINDOW_COUNT 10
+#define SLOT_HIT_CUTOFF 2
+#define SENDER_PULSE 4
 
-#define ADDR_0 0x1156
-#define ADDR_1 0x22dd
-#define ADDR_2 0x3464
-#define ADDR_3 0x45eb
-#define ADDR_4 0x5772
-#define ADDR_5 0x68f9 
-#define ADDR_6 0x7a80
-#define ADDR_7 0x8c07
-#define ADDR_8 0x9d8e
+#define ADDR_0 0x1176
+#define ADDR_1 0x22fd
+#define ADDR_2 0x3484
+#define ADDR_3 0x460b
+#define ADDR_4 0x5792
+#define ADDR_5 0x6919 
+#define ADDR_6 0x7aa0
+#define ADDR_7 0x8c27
+#define ADDR_8 0x9dae
 CYCLES measure_one_block_access_time(ADDR_PTR addr);
 void flush_one_block(ADDR_PTR addr);
 CYCLES probe_one_block(ADDR_PTR adrs);

@@ -21,11 +21,13 @@ CYCLES measure_one_block_access_time(ADDR_PTR addr)
 	return cycles;
 }
 CYCLES get_highres_time(){
-	CYCLES time;
+	volatile uint32_t time_lo;
+	volatile uint32_t time_hi;
 	asm volatile(
-	"lfence\n"
 	"rdtsc\n"
-	: "=a"(time));
+	: "=a"(time_lo),"=d"(time_hi));
+	CYCLES time = (uint64_t)time_lo | (( (uint64_t) time_hi) <<32);
+//	printf("GOT TIME %Ld\n",time);
 	return time;
 	
 }

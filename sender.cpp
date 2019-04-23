@@ -31,7 +31,7 @@ void send_bit_8(){
 
 char* mapped;
 ADDR_PTR sendbit_arr[9];
-void send_bit(char c,int i){
+inline void send_bit(char c,int i){
 	if (i == 0 || c & (1<<(i-1))){
 		char tmp = mapped[sendbit_arr[i]];
 	}
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 			}
 			int c = text_buf[i];	
 			CYCLES start_t = get_highres_time();
-			while(get_highres_time() - start_t < TIME_SLOT){//pulse for 1000 cycles
+			while(get_highres_time() - start_t < SLOT_HIT_CUTOFF*TIME_SLOT*SENDER_PULSE){//pulse for 1000 cycles
 				send_bit(c,0);
 				send_bit(c,1);
 				send_bit(c,2);
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 				send_bit(c,8);
 			}
 			start_t = get_highres_time();
-        		while(get_highres_time() - start_t <= TIME_SLOT*10){
+        		while(get_highres_time() - start_t <= TIME_SLOT*100){
 			}
 		}		
 		clock_t end = clock();

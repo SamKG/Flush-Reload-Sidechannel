@@ -25,33 +25,35 @@ int main(int argc, char **argv)
 	printf("Receiver now listening.\n");
 	int hitcnt = 0;
 	bool listening = true;
+	int hits[100];
 	while (listening) {
 		//spy flushes
-		for (int i = 0 ; i < num_ptrs ; i++){
-			flush_one_block(probe_ptrs[i]);
+		for (int i = 0 ; i < 100 ; i++){
+			hits[i] = 0;
 		}
 		//spy waits TIME_SLOT time
-		CYCLES start_t = get_highres_time();
-		while(get_highres_time() - start_t <= TIME_SLOT*2){
-		}
-		//spy reloads
-		int hits[100];
-		for (int i = 0 ; i < num_ptrs ; i++){
-			CYCLES time = probe_one_block(probe_ptrs[i]);
-			if ( time < TIME_CUTOFF){
-				hits[i] = 1;
-				//printf("HIT %d\t%d\t%d\n",i,hitcnt++,time);
+		for (int i = 0 ; i < SLOT_WINDOW_COUNT;  i++){
+			for (int i = 0 ; i < num_ptrs ; i++){
+				flush_one_block(probe_ptrs[i]);
 			}
-			else {
-				hits[i] = 0;
+			CYCLES start_t = get_highres_time();
+			while(get_highres_time() - start_t <= TIME_SLOT){
+			}
+			//spy reloads
+			for (int i = 0 ; i < num_ptrs ; i++){
+				CYCLES time = probe_one_block(probe_ptrs[i]);
+				if ( time < TIME_CUTOFF){
+					hits[i]++;
+					//printf("HIT %d\t%d\t%d\n",i,hitcnt++,time);
+				}
 			}
 		}
 		
-		if (hits[0]){
+		if (hits[0] >= SLOT_HIT_CUTOFF){
 			// 0 bit means we have a message!
 			int bitstr = 0;
 			for (int i = 1 ; i < num_ptrs ; i++){
-				if (hits[i]){
+				if (hits[i] >= SLOT_HIT_CUTOFF){
 					//printf("HIT BIT %d\n",i);
 					bitstr |= 1<<(i-1);	
 				}
